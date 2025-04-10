@@ -1,0 +1,19 @@
+{
+  "name": "kazi-connect-scripts",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "seed": "NODE_OPTIONS='--loader ts-node/esm' node seed-data.ts",
+    "seed:fallback": "NODE_OPTIONS='--loader ts-node/esm' node seed-fallback.ts",
+    "seed:test": "NODE_OPTIONS='--loader ts-node/esm' node seed-data.ts --test"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.42.0",
+    "@supabase/supabase-js": "^2.49.4",
+    "dotenv": "^16.4.7",
+    "node-fetch": "^3.3.2",
+    "playwright": "^1.42.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}

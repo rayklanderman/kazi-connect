@@ -1,11 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { MainLayout } from '@/components/layout/MainLayout';
+import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { companiesService, type Company } from '@/lib/services';
+import { companiesService, type Company } from '@/lib/services/companies.service';
 import { useToast } from '@/components/ui/use-toast';
-import { Search } from 'lucide-react';
 
 export default function Companies() {
   const { toast } = useToast();
@@ -16,89 +15,82 @@ export default function Companies() {
     queryFn: companiesService.getCompanies,
   });
 
-  if (error) {
-    toast({
-      title: 'Error',
-      description: error.message || 'Failed to fetch companies',
-      variant: 'destructive',
-    });
-  }
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to fetch companies',
+        variant: 'destructive',
+      });
+    }
+  }, [error, toast]);
 
   const filteredCompanies = companies?.filter((company) =>
     company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    company.industry.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    company.description.toLowerCase().includes(searchQuery.toLowerCase())
+    company.industry?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
-    <MainLayout>
-      <div className="space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold mb-6">Browse Companies</h1>
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold mb-6">Companies</h1>
 
-          {/* Search box */}
-          <div className="relative max-w-2xl mb-8">
-            <div className="relative">
+        {/* Search box */}
+        <div className="relative max-w-2xl">
+          <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+            <div className="relative flex-grow">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
               <Input
                 type="text"
                 className="pl-10"
-                placeholder="Search by company name, industry, or description"
+                placeholder="Search by company name or industry"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Company listings */}
-        {isLoading ? (
-          <div>Loading companies...</div>
-        ) : error ? (
-          <div className="text-destructive">Error loading companies</div>
-        ) : filteredCompanies?.length === 0 ? (
-          <div>No companies found</div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredCompanies?.map((company) => (
-              <div
-                key={company._id}
-                className="bg-card rounded-lg shadow p-6 hover:shadow-md transition-shadow"
-              >
-                <div className="h-14 w-14 rounded-md bg-primary/10 flex items-center justify-center mb-4">
-                  {company.logo ? (
+      {/* Company listings */}
+      {isLoading ? (
+        <div>Loading companies...</div>
+      ) : error ? (
+        <div className="text-destructive">Error loading companies</div>
+      ) : filteredCompanies?.length === 0 ? (
+        <div>No companies found</div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredCompanies?.map((company) => (
+            <div
+              key={company.id}
+              className="bg-card rounded-lg shadow p-6 hover:shadow-md transition-shadow"
+            >
+              <div className="flex flex-col space-y-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-lg font-semibold">{company.name}</h3>
+                    <p className="text-muted-foreground">{company.industry}</p>
+                  </div>
+                  {company.logo && (
                     <img
                       src={company.logo}
-                      alt={company.name}
-                      className="h-8 w-8 rounded-full object-cover"
+                      alt={`${company.name} logo`}
+                      className="w-12 h-12 object-contain"
                     />
-                  ) : (
-                    <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold">
-                      {company.name.charAt(0)}
-                    </div>
                   )}
                 </div>
-                <h3 className="text-lg font-semibold mb-1">{company.name}</h3>
-                <p className="text-muted-foreground mb-2">{company.industry}</p>
-                <p className="text-sm mb-4">{company.description}</p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
-                    {company.location}
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">
+                    {company.size || 'Size not specified'}
                   </span>
-                  {company.size && (
-                    <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
-                      {company.size} employees
-                    </span>
-                  )}
+                  <Button variant="outline">View Details</Button>
                 </div>
-                <Button variant="outline" className="w-full">
-                  View Company
-                </Button>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </MainLayout>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
