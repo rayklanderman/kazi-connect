@@ -1,64 +1,96 @@
-
-import React from 'react';
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Search } from 'lucide-react';
-import { Button } from "@/components/ui/button";
+import { MainLayout } from '@/components/layout/MainLayout';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { jobsService, type Job } from '@/lib/services';
+import { useToast } from '@/components/ui/use-toast';
 
-const Jobs = () => {
+export default function Jobs() {
+  const { toast } = useToast();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const { data: jobs, isLoading, error } = useQuery<Job[], Error>({
+    queryKey: ['jobs'],
+    queryFn: jobsService.getJobs,
+  });
+
+  if (error) {
+    toast({
+      title: 'Error',
+      description: error.message || 'Failed to fetch jobs',
+      variant: 'destructive',
+    });
+  }
+
+  const filteredJobs = jobs?.filter((job) =>
+    job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    job.company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    job.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <main className="flex-grow container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">Find Jobs</h1>
-        
-        {/* Search box */}
-        <div className="mb-8">
-          <div className="relative max-w-2xl mx-auto">
+    <MainLayout>
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-3xl font-bold mb-6">Find Jobs</h1>
+
+          {/* Search box */}
+          <div className="relative max-w-2xl">
             <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
               <div className="relative flex-grow">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
-                <input 
-                  type="text" 
-                  className="w-full pl-10 pr-4 py-3 rounded-md border border-slate-200 text-kazi-darkText focus:outline-none focus:ring-2 focus:ring-kazi-orange"
-                  placeholder="Job title, skill, or company" 
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  type="text"
+                  className="pl-10"
+                  placeholder="Search by job title, company, or description"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              <Button className="bg-kazi-orange text-white hover:bg-kazi-orange/90">
-                <Search className="mr-2 h-4 w-4" /> Find Jobs
-              </Button>
             </div>
           </div>
         </div>
-        
-        {/* Job listings placeholder */}
-        <div className="bg-white rounded-lg shadow p-6 mb-4">
-          <p className="text-lg font-semibold">Software Developer - Nairobi</p>
-          <p className="text-gray-600 mb-3">TechHub Kenya</p>
-          <p className="text-sm text-gray-500 mb-4">
-            Seeking a talented software developer to join our innovative team. 
-            This position requires strong programming skills in JavaScript and React.
-          </p>
-          <Button variant="outline" className="text-kazi-blue border-kazi-blue hover:bg-kazi-blue/10">
-            View Details
-          </Button>
-        </div>
-        
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-lg font-semibold">Marketing Associate - Mombasa</p>
-          <p className="text-gray-600 mb-3">Coastal Brands Ltd</p>
-          <p className="text-sm text-gray-500 mb-4">
-            Join our marketing team to help create and execute digital campaigns 
-            for various clients in the hospitality and tourism sector.
-          </p>
-          <Button variant="outline" className="text-kazi-blue border-kazi-blue hover:bg-kazi-blue/10">
-            View Details
-          </Button>
-        </div>
-      </main>
-      <Footer />
-    </div>
-  );
-};
 
-export default Jobs;
+        {/* Job listings */}
+        {isLoading ? (
+          <div>Loading jobs...</div>
+        ) : error ? (
+          <div className="text-destructive">Error loading jobs</div>
+        ) : filteredJobs?.length === 0 ? (
+          <div>No jobs found</div>
+        ) : (
+          <div className="space-y-4">
+            {filteredJobs?.map((job) => (
+              <div
+                key={job._id}
+                className="bg-card rounded-lg shadow p-6 hover:shadow-md transition-shadow"
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-lg font-semibold">{job.title}</h3>
+                    <p className="text-muted-foreground">{job.company.name}</p>
+                    <p className="text-sm mt-2">{job.description}</p>
+                    <div className="flex gap-2 mt-3">
+                      <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
+                        {job.type}
+                      </span>
+                      <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
+                        {job.location}
+                      </span>
+                      <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
+                        {`${job.salary.currency}${job.salary.min} - ${job.salary.max}`}
+                      </span>
+                    </div>
+                  </div>
+                  <Button variant="outline">View Details</Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </MainLayout>
+  );
+}
