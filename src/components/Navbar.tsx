@@ -1,24 +1,54 @@
 
 import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Menu, Search, User, Bell } from 'lucide-react';
 
 const Navbar = () => {
+  const location = useLocation();
+  
+  // Function to check if the link is active
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
+
   return (
     <header className="border-b border-slate-200 bg-white">
       <div className="container mx-auto flex items-center justify-between py-4">
         {/* Logo */}
         <div className="flex items-center space-x-2">
-          <div className="h-8 w-8 rounded-md bg-kazi-blue"></div>
-          <span className="font-bold text-xl text-kazi-blue">KaziConnect</span>
+          <Link to="/" className="flex items-center space-x-2">
+            <div className="h-8 w-8 rounded-md bg-kazi-blue"></div>
+            <span className="font-bold text-xl text-kazi-blue">KaziConnect</span>
+          </Link>
         </div>
         
         {/* Navigation - Desktop */}
         <nav className="hidden md:flex space-x-6">
-          <a href="#" className="font-medium text-kazi-darkText hover:text-kazi-blue">Dashboard</a>
-          <a href="#" className="font-medium text-kazi-darkText hover:text-kazi-blue">Jobs</a>
-          <a href="#" className="font-medium text-kazi-darkText hover:text-kazi-blue">Companies</a>
-          <a href="#" className="font-medium text-kazi-darkText hover:text-kazi-blue">Resources</a>
+          <Link 
+            to="/dashboard" 
+            className={`font-medium ${isActive('/dashboard') ? 'text-kazi-blue' : 'text-kazi-darkText hover:text-kazi-blue'}`}
+          >
+            Dashboard
+          </Link>
+          <Link 
+            to="/jobs" 
+            className={`font-medium ${isActive('/jobs') ? 'text-kazi-blue' : 'text-kazi-darkText hover:text-kazi-blue'}`}
+          >
+            Jobs
+          </Link>
+          <Link 
+            to="/companies" 
+            className={`font-medium ${isActive('/companies') ? 'text-kazi-blue' : 'text-kazi-darkText hover:text-kazi-blue'}`}
+          >
+            Companies
+          </Link>
+          <Link 
+            to="/resources" 
+            className={`font-medium ${isActive('/resources') ? 'text-kazi-blue' : 'text-kazi-darkText hover:text-kazi-blue'}`}
+          >
+            Resources
+          </Link>
         </nav>
         
         {/* Actions */}
