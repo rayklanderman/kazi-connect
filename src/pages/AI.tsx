@@ -4,17 +4,38 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useState } from 'react';
 import { aiService } from '@/lib/services/ai.service';
-import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const commonRoles = [
+  'Software Developer',
+  'Business Analyst',
+  'Project Manager',
+  'Data Scientist',
+  'UX Designer',
+  'Product Manager',
+  'HR Manager',
+  'Marketing Manager',
+  'Sales Manager',
+  'Financial Analyst'
+];
 
 export default function AIPage() {
-  const [jobId, setJobId] = useState<string>('');
+  const [selectedRole, setSelectedRole] = useState<string>('');
   const [questions, setQuestions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleGenerateQuestions = async () => {
+    if (!selectedRole) return;
+    
     try {
       setIsLoading(true);
-      const result = await aiService.generateInterviewQuestions(jobId);
+      const result = await aiService.generateInterviewQuestions(selectedRole);
       setQuestions(result);
     } catch (error) {
       console.error('Failed to generate questions:', error);
@@ -40,22 +61,28 @@ export default function AIPage() {
             <CardHeader>
               <CardTitle>Interview Preparation</CardTitle>
               <CardDescription>
-                Generate practice interview questions based on job requirements. Enter the UUID of a job listing.
+                Generate practice interview questions based on your target job role.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex gap-4">
-                <Input
-                  type="text"
-                  placeholder="Enter Job UUID"
-                  value={jobId}
-                  onChange={(e) => setJobId(e.target.value)}
-                />
+                <Select value={selectedRole} onValueChange={setSelectedRole}>
+                  <SelectTrigger className="w-[280px]">
+                    <SelectValue placeholder="Select a job role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {commonRoles.map((role) => (
+                      <SelectItem key={role} value={role}>
+                        {role}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <Button
                   onClick={handleGenerateQuestions}
-                  disabled={!jobId || isLoading}
+                  disabled={!selectedRole || isLoading}
                 >
-                  Generate Questions
+                  {isLoading ? 'Generating...' : 'Generate Questions'}
                 </Button>
               </div>
 
