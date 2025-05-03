@@ -1,0 +1,14 @@
+node_modules
+npm-debug.log
+dist
+build
+.cache
+Dockerfile*
+.dockerignore
+.env
+.env.*
+*.log
+.vscode
+.idea
+*.tsbuildinfo
+*.tgz

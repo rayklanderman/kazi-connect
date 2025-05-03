@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -67,6 +68,20 @@ export function ResumeAnalyzer() {
                   <li key={i}>{strength}</li>
                 ))}
               </ul>
+              <Button
+                className="mt-2"
+                variant="secondary"
+                onClick={async () => {
+                  // Add strengths to bio
+                  const { data: { user } } = await supabase.auth.getUser();
+                  if (!user) return;
+                  const bio = analysis.strengths.join("; ");
+                  await supabase.from('profiles').update({ bio }).eq('id', user.id);
+                  alert('Strengths added to your bio!');
+                }}
+              >
+                Add Strengths to Bio
+              </Button>
             </div>
 
             <div>
@@ -99,6 +114,23 @@ export function ResumeAnalyzer() {
                   </span>
                 ))}
               </div>
+              <Button
+                className="mt-2"
+                variant="secondary"
+                onClick={async () => {
+                  // Add all skills to profile
+                  const { data: { user } } = await supabase.auth.getUser();
+                  if (!user) return;
+                  // Get current skills
+                  const { data: profile } = await supabase.from('profiles').select('skills').eq('id', user.id).single();
+                  const currentSkills = profile?.skills || [];
+                  const newSkills = Array.from(new Set([...currentSkills, ...analysis.keySkills]));
+                  await supabase.from('profiles').update({ skills: newSkills }).eq('id', user.id);
+                  alert('Skills added to your profile!');
+                }}
+              >
+                Add All Skills to Profile
+              </Button>
             </div>
           </CardContent>
         </Card>

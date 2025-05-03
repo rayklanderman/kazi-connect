@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -25,9 +25,11 @@ export default function Companies() {
     }
   }, [error, toast]);
 
+  // Only include companies with a valid website/career/vacancy link
   const filteredCompanies = companies?.filter((company) =>
-    company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    company.industry?.toLowerCase().includes(searchQuery.toLowerCase())
+    (company.website && company.website.startsWith('http')) &&
+    (company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      company.industry?.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   return (
@@ -72,19 +74,33 @@ export default function Companies() {
                     <h3 className="text-lg font-semibold">{company.name}</h3>
                     <p className="text-muted-foreground">{company.industry}</p>
                   </div>
-                  {company.logo && (
-                    <img
-                      src={company.logo}
-                      alt={`${company.name} logo`}
-                      className="w-12 h-12 object-contain"
-                    />
-                  )}
+                  <img
+                    src={company.logo && company.logo.trim() !== '' ? company.logo : '/default-logo.png'}
+                    alt={`${company.name} logo`}
+                    className="w-12 h-12 object-contain"
+                    style={{ background: '#fff' }}
+                    onError={(e) => {
+                      // Only set to default if not already the default
+                      if (!e.currentTarget.src.endsWith('/default-logo.png')) {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = '/default-logo.png';
+                      }
+                    }}
+                  />
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">
                     {company.size || 'Size not specified'}
                   </span>
-                  <Button variant="outline">View Details</Button>
+                  {company.website ? (
+                    <Button variant="outline" asChild>
+                      <a href={company.website} target="_blank" rel="noopener noreferrer">
+                        Visit Site
+                      </a>
+                    </Button>
+                  ) : (
+                    <Button variant="outline" disabled>Visit Site</Button>
+                  )}
                 </div>
               </div>
             </div>
