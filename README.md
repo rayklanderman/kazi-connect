@@ -1,26 +1,32 @@
+<p align="center">
+  <img src="./public/icon-512.png" alt="Kazi Connect Logo" width="128"/>
+</p>
+
 # Kazi Connect
 
-A modern job platform connecting talent with opportunities in Kenya and beyond.
+Discover your next opportunity with Kazi Connect – a smarter way to match your skills and experience with the best jobs available.
 
-## Features
 
-- Modern landing page with call-to-action
-- User authentication with email confirmation
-- Job listings and company profiles
-- Resource library for career development
-- Mobile-responsive design
-- AI-powered resume analysis
-- Smart interview preparation
+## Why Kazi Connect?
 
-## Tech Stack
+- **Personalized Job Matches:** Our smart matching logic analyzes your profile and resume to recommend roles that truly fit your strengths and ambitions.
+- **Seamless Experience:** Manage your profile, upload your CV, and save jobs all in one convenient place.
+- **Stay Organized:** Bookmark opportunities and track your applications effortlessly.
+- **Accessible Anywhere:** Enjoy a beautiful, mobile-friendly interface and install the app on your device for instant access.
 
-- React + TypeScript
-- Vite for build tooling
-- Shadcn UI + TailwindCSS
-- Supabase for backend
-- React Query for data fetching
-- Zustand for state management
-- xAI API for AI features
+## Try It Now
+
+**Live Site:** [https://kazi-connect.vercel.app/](https://kazi-connect.vercel.app/)
+
+**Note:** This project uses Supabase only. Any references to Firebase in earlier versions are obsolete.
+
+### Security & Secrets
+- All secrets (API keys, Supabase credentials) must be stored in `.env`, which is already included in `.gitignore`.
+- **Never** commit your `.env` or any secret keys to the repository.
+- The `.env.example` file provides a template but does not contain real credentials.
+
+### .gitignore
+This project includes a comprehensive `.gitignore` to avoid committing sensitive files, node_modules, build output, and environment variables.
 
 ## Getting Started
 

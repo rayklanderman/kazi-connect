@@ -150,5 +150,73 @@ export const jobsService = {
     if (error) {
       throw new Error(error.message);
     }
+  },
+
+  // Save a job (local or Adzuna)
+  saveJob: async (
+    userId: string,
+    job: {
+      id: string;
+      title: string;
+      url?: string;
+      company?: { name: string; website?: string };
+      isAdzuna?: boolean;
+    }
+  ): Promise<void> => {
+    // If Adzuna job, save minimal info
+    const isAdzuna = !job.hasOwnProperty('company_id');
+    let insertData;
+    if (isAdzuna) {
+      insertData = {
+        user_id: userId,
+        adzuna_id: job.id,
+        title: job.title,
+        url: job.url,
+        company: job.company?.name || '',
+        source: 'adzuna',
+      };
+    } else {
+      insertData = {
+        user_id: userId,
+        job_id: job.id,
+        source: 'local',
+      };
+    }
+    const { error } = await supabase.from('saved_jobs').insert([insertData]);
+    if (error) throw new Error(error.message);
+  },
+
+  // Apply to a job (local or Adzuna)
+  applyToJob: async (
+    userId: string,
+    job: {
+      id: string;
+      title: string;
+      url?: string;
+      company?: { name: string; website?: string };
+      isAdzuna?: boolean;
+    }
+  ): Promise<void> => {
+    // If Adzuna job, save minimal info
+    const isAdzuna = !job.hasOwnProperty('company_id');
+    let insertData;
+    if (isAdzuna) {
+      insertData = {
+        user_id: userId,
+        adzuna_id: job.id,
+        title: job.title,
+        url: job.url,
+        company: job.company?.name || '',
+        source: 'adzuna',
+      };
+    } else {
+      insertData = {
+        user_id: userId,
+        job_id: job.id,
+        source: 'local',
+      };
+    }
+    const { error } = await supabase.from('applied_jobs').insert([insertData]);
+    if (error) throw new Error(error.message);
   }
 };

@@ -12,17 +12,22 @@ import {
   Moon,
   Sun,
   X,
+  User,
+  Accessibility,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
 
 const navigation = [
-  { name: 'Dashboard', to: '/', icon: LayoutDashboard },
+  { name: 'Home', to: '/', icon: LayoutDashboard },
   { name: 'Jobs', to: '/jobs', icon: Briefcase },
+  { name: 'Job Match', to: '/job-match', icon: Briefcase },
+  { name: 'Profile', to: '/profile', icon: User },
   { name: 'Companies', to: '/companies', icon: Building2 },
   { name: 'Resources', to: '/resources', icon: GraduationCap },
-  { name: 'AI Assistant', to: '/ai', icon: Bot },
+  { name: 'AI', to: '/ai', icon: Bot },
+  { name: 'Accessibility', to: '/accessibility', icon: Accessibility },
 ];
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
@@ -67,11 +72,11 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container">
-          <div className="flex h-16 items-center justify-between">
-            {/* Logo and Mobile Menu Button */}
-            <div className="flex items-center">
+      {/* Kenyan flag theme gradient bar */}
+      <nav className="sticky top-0 z-50 w-full bg-gradient-to-r from-black via-green-700 to-red-600 py-2 px-0 border-b-4 border-white">
+        <div className="container mx-auto flex items-center justify-between h-14 px-2 md:px-0">
+          {/* Logo and Mobile Menu Button */}
+          <div className="flex items-center">
               <button
                 type="button"
                 className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground lg:hidden"
@@ -85,23 +90,24 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
                 )}
               </button>
               <Link to="/" className="ml-4 lg:ml-0">
-                <h1 className="text-xl font-bold tracking-tight hover-lift">
-                  Kazi Connect
-                </h1>
+                <span className="text-2xl font-extrabold tracking-tight select-none" style={{display: 'inline-block', letterSpacing: 1, textShadow: '0 2px 8px rgba(0,0,0,0.18)'}} tabIndex={0}>
+  <span style={{color: '#fff'}}>Kazi</span>
+  <span style={{color: '#FF0000'}}> Connect</span>
+</span>
               </Link>
             </div>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex lg:gap-x-6">
+            <div className="hidden lg:flex lg:gap-x-2">
               {navigation.map((item) => (
                 <Link
                   key={item.name}
                   to={item.to}
                   className={cn(
-                    'nav-link inline-flex items-center px-1 py-2 text-sm font-medium',
+                    'nav-link inline-flex items-center px-3 py-2 text-sm font-semibold rounded-lg transition-colors duration-150',
                     location.pathname === item.to
-                      ? 'text-foreground'
-                      : 'text-muted-foreground hover:text-foreground'
+                      ? 'bg-white text-black shadow font-bold'
+                      : 'text-white/90 hover:bg-white/20 hover:text-white'
                   )}
                 >
                   <item.icon className="mr-2 h-4 w-4" />
@@ -137,7 +143,6 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
                   <span className="hidden md:inline">Sign out</span>
                 </Button>
               </div>
-            </div>
           </div>
         </div>
 
@@ -156,10 +161,10 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
                 key={item.name}
                 to={item.to}
                 className={cn(
-                  'hover-lift flex items-center rounded-md px-3 py-2 text-base font-medium',
+                  'flex items-center rounded-md px-3 py-2 text-base font-semibold',
                   location.pathname === item.to
-                    ? 'bg-primary/10 text-primary'
-                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'text-white/90 hover:bg-blue-500/70 hover:text-white'
                 )}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
@@ -170,7 +175,6 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </nav>
-
       {/* Main Content */}
       <main className="container py-8">
         <div className="fade-in">{children}</div>
@@ -178,3 +182,4 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
+

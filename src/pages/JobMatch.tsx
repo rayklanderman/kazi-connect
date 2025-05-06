@@ -70,20 +70,63 @@ export default function JobMatch() {
           salary_range: job.salary_min && job.salary_max ? `${job.salary_min} - ${job.salary_max}` : 'N/A',
           url: job.redirect_url
         }));
-        setJobs(jobsList);
         // Call xai API (aiService.matchWithJob) for each job
         const results: MatchResult[] = [];
-        for (const job of jobsList.slice(0, 10)) { // Limit to 10 for demo
-          try {
-            const matchResult = await aiService.matchWithJob(profile?.bio || '', job.id);
-            results.push({ job, score: matchResult.score / 100, explanation: matchResult.recommendation });
-          } catch (err) {
-            // fallback if xai fails
-            results.push({ job, score: 0, explanation: 'AI match unavailable.' });
+        for (const job of jobsList) {
+          // If the job does not have a company_id, assume it's from Adzuna (external), skip AI matching
+          if (!job.company_id) {
+            // fallback: match by skills only
+            let skillMatch = false;
+            let explanation = 'Matched by skills.';
+            const skillsToCheck = (profile?.skills || []).map(s => s.trim().toLowerCase()).filter(Boolean);
+            const jobText = (job.title + ' ' + job.description).toLowerCase();
+            if (skillsToCheck.length > 0) {
+              for (const skill of skillsToCheck) {
+                const skillTokens = skill.split(' ');
+                for (const token of skillTokens) {
+                  if (token && jobText.includes(token)) {
+                    skillMatch = true;
+                    explanation = `Matched by skill keyword: ${token}`;
+                    break;
+                  }
+                }
+                if (skillMatch) break;
+              }
+            } else {
+              // If no skills, match all jobs
+              skillMatch = true;
+              explanation = 'No skills set: showing all jobs.';
+            }
+            if (skillMatch) {
+  results.push({ job, score: 0.5, explanation });
+}
+          } else {
+            try {
+              const matchResult = await aiService.matchWithJob(profile?.bio || '', job.id);
+              results.push({ job, score: matchResult.score / 100, explanation: matchResult.recommendation });
+            } catch (err) {
+              // fallback: match by skills if xai fails
+              let skillMatch = false;
+              let explanation = 'AI match unavailable.';
+              if (profile?.skills && profile.skills.length > 0) {
+                const jobText = (job.title + ' ' + job.description).toLowerCase();
+                for (const skill of profile.skills) {
+                  if (jobText.includes(skill.toLowerCase())) {
+                    skillMatch = true;
+                    explanation = `Matched by skill: ${skill}`;
+                    break;
+                  }
+                }
+              }
+              if (skillMatch) {
+  results.push({ job, score: 0.5, explanation });
+}
+            }
           }
         }
         // Sort by score descending
         results.sort((a, b) => b.score - a.score);
+        setJobs(jobsList);
         setMatches(results);
       } catch (err: any) {
         setError(err.message || 'Failed to fetch matches');
@@ -197,16 +240,19 @@ export default function JobMatch() {
                     disabled={appliedJobs.includes(job.id)}
                     onClick={async () => {
                       if (!userProfile) return;
+                      // If Adzuna job (no company_id), disable apply, only allow view details
+                      if (!job.company_id) return;
                       try {
-                        await jobsService.applyToJob(userProfile.id, job.id);
+                        await jobsService.applyToJob(userProfile.id, job);
                         setAppliedJobs([...appliedJobs, job.id]);
                         setActionMsg('Job applied successfully!');
                       } catch (err: any) {
                         setActionMsg(err.message || 'Failed to apply');
                       }
                     }}
+                    disabled={!job.company_id || appliedJobs.includes(job.id)}
                   >
-                    {appliedJobs.includes(job.id) ? 'Applied' : 'Apply'}
+                    {!job.company_id ? 'Apply (External)' : appliedJobs.includes(job.id) ? 'Applied' : 'Apply'}
                   </Button>
                   <Button
                     variant={savedJobs.includes(job.id) ? 'secondary' : 'outline'}
@@ -214,13 +260,14 @@ export default function JobMatch() {
                     onClick={async () => {
                       if (!userProfile) return;
                       try {
-                        await jobsService.saveJob(userProfile.id, job.id);
+                        await jobsService.saveJob(userProfile.id, job);
                         setSavedJobs([...savedJobs, job.id]);
                         setActionMsg('Job saved!');
                       } catch (err: any) {
                         setActionMsg(err.message || 'Failed to save');
                       }
                     }}
+                    disabled={savedJobs.includes(job.id)}
                   >
                     {savedJobs.includes(job.id) ? 'Saved' : 'Save'}
                   </Button>

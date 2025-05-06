@@ -1,11 +1,10 @@
-
 import React from 'react';
-import Navbar from '@/components/Navbar';
+
 import Hero from '@/components/Hero';
 import JobCard from '@/components/JobCard';
 import ProfileCard from '@/components/ProfileCard';
 import FeatureHighlight from '@/components/FeatureHighlight';
-import Footer from '@/components/Footer';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { 
@@ -59,7 +58,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
+
       <Hero />
       
       {/* Features Section */}
@@ -313,7 +312,7 @@ const Index = () => {
         </div>
       </section>
       
-      <Footer />
+
     </div>
   );
 };

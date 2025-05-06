@@ -16,7 +16,7 @@ import AIPage from '@/pages/AI';
 import JobMatch from '@/pages/JobMatch';
 import Profile from '@/pages/Profile'; // New Profile page
 import Accessibility from '@/pages/Accessibility';
-import { Navbar } from '@/components/layout/Navbar';
+
 import Footer from '@/components/layout/Footer';
 
 const queryClient = new QueryClient({
@@ -45,7 +45,7 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Router {...routerConfig}>
-        <Navbar />
+
         <Routes>
           {/* Public routes */}
           <Route path="/" element={<Landing />} />
