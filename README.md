@@ -2,113 +2,78 @@
   <img src="./public/icon-512.png" alt="Kazi Connect Logo" width="128"/>
 </p>
 
-# Kazi Connect
+# 💼 Kazi Connect
 
-Discover your next opportunity with Kazi Connect – a smarter way to match your skills and experience with the best jobs available.
+**Discover your next opportunity — the smart way.**  
+Kazi Connect matches your skills and experience to the right jobs with intelligent logic and a clean, mobile-friendly design.
 
+---
 
-## Why Kazi Connect?
+## 🚀 Why Kazi Connect?
 
-- **Personalized Job Matches:** Our smart matching logic analyzes your profile and resume to recommend roles that truly fit your strengths and ambitions.
-- **Seamless Experience:** Manage your profile, upload your CV, and save jobs all in one convenient place.
-- **Stay Organized:** Bookmark opportunities and track your applications effortlessly.
-- **Accessible Anywhere:** Enjoy a beautiful, mobile-friendly interface and install the app on your device for instant access.
+- 🤖 **AI-Powered Matching:** We analyze your profile and CV to recommend roles that align with your skills, goals, and experience.
+- 📄 **CV Upload & Profile Management:** Seamlessly manage your job-seeking documents and preferences in one place.
+- 🔖 **Bookmark & Track:** Save interesting opportunities and track your application progress with ease.
+- 📱 **Installable Web App:** Beautiful PWA experience you can install directly on your device.
+- 🧭 **User-Centric Navigation:** Clean, fast, and intuitive UI designed for all devices.
 
-## Try It Now
+---
 
-**Live Site:** [https://kazi-connect.vercel.app/](https://kazi-connect.vercel.app/)
+## ✨ Features Overview
 
-**Note:** This project uses Supabase only. Any references to Firebase in earlier versions are obsolete.
+- ✅ Personalized job recommendations
+- 📂 Profile dashboard with CV upload
+- 🔖 Bookmark jobs and manage applications
+- 💬 Smart UI/UX with feedback-driven design
+- 🖥️ Fully responsive for mobile, tablet, and desktop
+- 📲 PWA-ready (installable on mobile devices)
 
-### Security & Secrets
-- All secrets (API keys, Supabase credentials) must be stored in `.env`, which is already included in `.gitignore`.
-- **Never** commit your `.env` or any secret keys to the repository.
-- The `.env.example` file provides a template but does not contain real credentials.
+---
 
-### .gitignore
-This project includes a comprehensive `.gitignore` to avoid committing sensitive files, node_modules, build output, and environment variables.
+## 🧠 How It Works
 
-## Getting Started
+1. **Create a Profile** – Add your experience, skills, and preferences.
+2. **Upload Your CV** – Our logic uses this to refine job suggestions.
+3. **Browse Matches** – Instantly see jobs tailored to your profile.
+4. **Bookmark & Apply** – Save listings and apply directly.
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/rayklanderman/kazi-connect.git
-   cd kazi-connect
-   ```
+---
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+## 🌐 Live Demo
 
-3. Set up environment variables:
-   ```bash
-   cp .env.example .env
-   ```
-   Then update the `.env` file with your credentials:
-   - `VITE_SUPABASE_URL`: Your Supabase project URL
-   - `VITE_SUPABASE_ANON_KEY`: Your Supabase anonymous key
-   - `VITE_XAI_API_KEY`: Your xAI API key
+👉 [Visit Kazi Connect](https://kazi-connect.vercel.app/)
 
-4. Start the development server:
-   ```bash
-   npm run dev
-   ```
+---
 
-## Development
+## 💡 Tech Stack
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
+- **Frontend:** React, TailwindCSS
+- **Backend (Future Plan):** Firebase / Supabase
+- **Deployment:** Vercel
+- **Storage:** Cloud / Resume file handling (planned)
 
-## Deployment
+---
 
-### Deploying to Vercel
+## 🧑‍💼 Ideal For
 
-1. Push your code to GitHub
-2. Import your repository in Vercel
-3. Set up environment variables in Vercel:
-   - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_ANON_KEY`
-   - `VITE_XAI_API_KEY`
-4. Deploy
+- Fresh graduates seeking smarter job discovery
+- Professionals looking for curated job matches
+- Recruiters searching for talent with a clean system
 
-### Manual Deployment
+---
 
-The application can be deployed to any static hosting service that supports single-page applications (SPA):
+## 🤝 Contributing
 
-1. Build the project:
-   ```bash
-   npm run build
-   ```
+Feel free to open issues or pull requests. Feedback and contributions are always welcome!
 
-2. Deploy the `dist` directory to your hosting service
+---
 
-### Supabase Edge Functions
+## 👨‍💻 Author
 
-The project uses Supabase Edge Functions for AI features. To deploy them:
+**R K a.k.a DevRay**  
+AI Developer • Full-stack Engineer • Data Nerd  
+[🔗 Portfolio](https://ray-klanderman-portfolio-teamdevray.vercel.app/)
 
-1. Install Supabase CLI if not already installed:
-   ```bash
-   npm install -g supabase
-   ```
+---
 
-2. Login to Supabase:
-   ```bash
-   supabase login
-   ```
-
-3. Deploy the functions:
-   ```bash
-   supabase functions deploy ai-analyze --project-ref your-project-ref
-   ```
-
-4. Set the Edge Function environment variables:
-   ```bash
-   supabase secrets set XAI_API_KEY=your-xai-api-key --project-ref your-project-ref
-   ```
-
-## License
-
-MIT
+_“Don’t just look for jobs — let the right jobs find you.”_
