@@ -17,7 +17,7 @@ export const companiesService = {
     const { data, error } = await supabase
       .from('companies')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('name', { ascending: true });
 
     if (error) {
       throw new Error(error.message);

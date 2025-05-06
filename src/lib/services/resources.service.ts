@@ -21,7 +21,7 @@ export const resourcesService = {
     const { data, error } = await supabase
       .from('resources')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('title', { ascending: true });
 
     if (error) {
       throw new Error(error.message);
