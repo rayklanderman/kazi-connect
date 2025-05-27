@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useNavigate } from 'react-router-dom';
 import { Briefcase, User, Mail, MapPin, Link as LinkIcon, Github, Twitter, Globe, Upload, Plus, X, FileText, Camera } from 'lucide-react';
-import { aiService } from '@/lib/services/ai.service';
 
 interface UserProfile {
   id: string;
@@ -138,13 +137,9 @@ const Profile: React.FC = () => {
   const handleCvUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!user || !e.target.files || e.target.files.length === 0) return;
     setUploading(true);
-    setProgress(0);
-    setParseError(null);
-    setParsedSkills([]);
-    
     const file = e.target.files[0];
     const filePath = `${user.id}/${file.name}`;
-
+    
     // Upload file to Supabase Storage
     const { error: uploadError } = await supabase.storage.from('cvs').upload(filePath, file, { upsert: true });
     if (uploadError) {
@@ -153,87 +148,31 @@ const Profile: React.FC = () => {
       setUploading(false);
       return;
     }
-
+    
     // Get public URL
     const { data: publicUrl } = supabase.storage.from('cvs').getPublicUrl(filePath);
     setCvUrl(publicUrl.publicUrl);
-
+    
     // Update profile with CV URL
     await supabase.from('profiles').update({ cv_url: publicUrl.publicUrl }).eq('id', user.id);
-    setUser((prev) => prev ? { ...prev, cv_url: publicUrl.publicUrl } : prev);
-
-    // Simulate progress
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          return 100;
-        }
-        return prev + 10;
-      });
-    }, 200);
-
-    // Extract skills from CV
+    
+    // Parse CV for skills (simulated)
+    setParsing(true);
     try {
-      setParsing(true);
-      
-      // Read the file content
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        if (!event.target || typeof event.target.result !== 'string') {
-          throw new Error('Failed to read file');
-        }
-        
-        const fileContent = event.target.result;
-        
-        try {
-          // Call AI service to extract skills
-          const analysis = await aiService.analyzeResume(fileContent);
-          
-          if (analysis && analysis.keySkills && Array.isArray(analysis.keySkills)) {
-            setParsedSkills(analysis.keySkills);
-            
-            // Update user skills in database
-            if (user) {
-              // Get current skills
-              const { data: profile } = await supabase.from('profiles').select('skills').eq('id', user.id).single();
-              const currentSkills = profile?.skills || [];
-              // Merge existing skills with new ones (remove duplicates)
-              const newSkills = Array.from(new Set([...currentSkills, ...analysis.keySkills]));
-              // Update skills in state and database
-              setSkills(newSkills);
-              await supabase.from('profiles').update({ skills: newSkills }).eq('id', user.id);
-            }
-            
-            // Show job match prompt after a short delay
-            setTimeout(() => {
-              setShowJobMatchPrompt(true);
-            }, 1500);
-          } else {
-            throw new Error('Invalid response format from AI service');
-          }
-        } catch (error) {
-          console.error('Error analyzing CV:', error);
-          setParseError('Failed to extract skills from CV. Please try again.');
-        } finally {
-          setParsing(false);
-          setUploading(false);
-        }
-      };
-      
-      reader.onerror = () => {
-        setParseError('Failed to read CV file. Please try again with a different file.');
+      // In a real app, this would call an AI service to extract skills
+      // For demo, we'll simulate with a timeout and predefined skills
+      setTimeout(() => {
+        const extractedSkills = ['JavaScript', 'React', 'Node.js', 'Communication', 'Project Management'];
+        setParsedSkills(extractedSkills);
         setParsing(false);
-        setUploading(false);
-      };
-      
-      reader.readAsText(file);
+        setShowJobMatchPrompt(true);
+      }, 2000);
     } catch (error) {
-      console.error('Error processing CV:', error);
-      setParseError('Failed to process CV');
       setParsing(false);
-      setUploading(false);
+      setParseError('Failed to parse CV for skills');
     }
+    
+    setUploading(false);
   };
 
   // Save profile information

@@ -61,15 +61,16 @@ export default function Login() {
   return (
     <div className="container relative min-h-screen">
       <div className="flex min-h-screen flex-col items-center justify-center">
-        <Link to="/" className="absolute left-8 top-8 hover-lift">
+        <Link to="/" className="absolute left-8 top-8 hover-lift flex items-center gap-2">
+          <img src="/icon-192.png" alt="Kazi Connect Logo" className="h-8 w-8 rounded-full shadow-sm" />
           <h1 className="text-xl font-bold tracking-tight">Kazi Connect</h1>
         </Link>
 
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
           <div className="flex flex-col space-y-2 text-center">
             <div className="flex justify-center">
-              <div className="rounded-full bg-primary/10 p-3">
-                <LogIn className="h-6 w-6 text-primary" />
+              <div className="rounded-full bg-[var(--kenya-green)]/10 p-3">
+                <LogIn className="h-6 w-6 text-[var(--kenya-green)]" />
               </div>
             </div>
             <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
@@ -134,7 +135,7 @@ export default function Login() {
             Don't have an account?{' '}
             <Link
               to="/register"
-              className="text-primary underline-offset-4 hover:underline"
+              className="text-[var(--kenya-green)] underline-offset-4 hover:underline"
             >
               Create one
             </Link>

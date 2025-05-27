@@ -194,17 +194,10 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="mb-4 md:mb-0">
-              <div className="flex items-center gap-2">
-                <img 
-                  src="/icon-192.png" 
-                  alt="Kazi Connect Logo" 
-                  className="h-8 w-8 rounded-full shadow-sm" 
-                />
-                <span className="text-xl font-bold">
-                  <span style={{color: 'var(--kenya-black)'}}>Kazi</span>
-                  <span style={{color: 'var(--kenya-red)'}}> Connect</span>
-                </span>
-              </div>
+              <span className="text-xl font-bold">
+                <span style={{color: 'var(--kenya-black)'}}>Kazi</span>
+                <span style={{color: 'var(--kenya-red)'}}> Connect</span>
+              </span>
               <p className="text-sm mt-2">Connecting African talent with global opportunities</p>
             </div>
             <div className="flex flex-wrap gap-4 justify-center md:justify-end">

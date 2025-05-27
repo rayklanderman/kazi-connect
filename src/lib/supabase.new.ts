@@ -1,10 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
 
-/**
- * Secure Supabase client configuration with proper environment variable handling,
- * authentication flow, and security headers.
- */
-
 // Get environment variables
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -14,38 +9,21 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables. Please check your .env file.');
 }
 
-// Validate URL format to prevent security issues
-const isValidUrl = (url: string): boolean => {
-  try {
-    const parsedUrl = new URL(url);
-    return parsedUrl.protocol === 'https:'; // Ensure HTTPS only
-  } catch (e) {
-    return false;
-  }
-};
-
-if (!isValidUrl(supabaseUrl)) {
-  throw new Error('Invalid Supabase URL. Must be a valid HTTPS URL.');
-}
-
-// Create and export the Supabase client with enhanced security configuration
+// Create and export the Supabase client with enhanced configuration
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
     storageKey: 'kazi-connect-auth',
-    // Use PKCE flow for enhanced security
+    // Add a 15-minute session expiry detection buffer
     detectSessionInUrl: true,
     flowType: 'pkce'
-    // Note: cookieOptions removed as it's not supported in the current version
   },
   global: {
     // Add request headers for better tracking and security
     headers: {
       'x-application-name': 'kazi-connect',
-      'x-application-version': import.meta.env.VITE_APP_VERSION || '0.0.0',
-      'x-content-type-options': 'nosniff',
-      'x-frame-options': 'DENY'
+      'x-application-version': import.meta.env.VITE_APP_VERSION || '0.0.0'
     }
   },
   // Add better error handling for network issues

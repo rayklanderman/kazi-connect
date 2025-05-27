@@ -4,8 +4,8 @@
   "description": "Personalized job matching for Kenyan professionals.",
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#222b1b",
-  "theme_color": "#222b1b",
+  "background_color": "#006600",
+  "theme_color": "#006600",
   "icons": [
     {
       "src": "/icon-192.png",

@@ -1,5 +1,10 @@
-import React, { useState, useRef } from 'react';
-import micIcon from '../mic.svg';
+import React, { useState, useRef, useEffect } from 'react';
+import { Eye, EyeOff, Volume2, VolumeX, Mic, MicOff, ZoomIn, ZoomOut, MessageSquare, Send } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
 
 // Voice input using the Web Speech API (only works in supported browsers)
 const useVoiceInput = (onResult: (text: string) => void) => {
@@ -44,19 +49,30 @@ export default function Accessibility() {
   const [screenReaderMode, setScreenReaderMode] = useState(false);
   const [colorBlindPalette, setColorBlindPalette] = useState(false);
   const [ariaMessage, setAriaMessage] = useState('');
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const { listening, startListening, stopListening } = useVoiceInput(setVoiceInput);
 
   // Keyboard shortcuts
-  React.useEffect(() => {
+  useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.altKey && e.code === 'KeyZ') { setFontSize(f => Math.min(f + 2, 36)); setAriaMessage('Zoom increased'); }
+      if (e.altKey && e.code === 'KeyX') { setFontSize(f => Math.max(f - 2, 12)); setAriaMessage('Zoom decreased'); }
       if (e.altKey && e.code === 'KeyC') { setHighContrast(h => !h); setAriaMessage('Contrast toggled'); }
       if (e.altKey && e.code === 'KeyV') { listening ? stopListening() : startListening(); setAriaMessage('Voice input toggled'); }
       if (e.altKey && e.code === 'KeyS') { setScreenReaderMode(s => !s); setAriaMessage('Screen reader mode toggled'); }
+      if (e.altKey && e.code === 'KeyB') { setColorBlindPalette(c => !c); setAriaMessage('Color blind palette toggled'); }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [listening, startListening, stopListening]);
+  
+  // Show success message temporarily
+  useEffect(() => {
+    if (showSuccessMessage) {
+      const timer = setTimeout(() => setShowSuccessMessage(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSuccessMessage]);
 
   // Color palettes
   // Kenyan flag inspired palette
@@ -67,6 +83,8 @@ export default function Accessibility() {
     contrast: highContrast ? '#000' : '#222',
     contrastText: highContrast ? '#fff' : '#FFD700',
     heading: '#FF0000', // red for headings
+    border: '#00BFFF',
+    card: '#333',
   } : highContrast ? {
     background: '#000',
     color: '#fff',
@@ -74,13 +92,17 @@ export default function Accessibility() {
     contrast: '#000',
     contrastText: '#fff',
     heading: '#00A651', // green for headings
+    border: '#fff',
+    card: '#222',
   } : {
     background: '#fff',
     color: '#222',
-    accent: '#006600', // Kenyan green
+    accent: 'var(--kenya-green)', // Kenyan green
     contrast: '#fff',
     contrastText: '#222',
-    heading: '#FF0000', // Kenyan red
+    heading: 'var(--kenya-black)', // Kenyan black
+    border: 'var(--kenya-green)',
+    card: 'var(--kenya-green)/5',
   };
 
 
@@ -89,48 +111,72 @@ export default function Accessibility() {
   const [feedbackSent, setFeedbackSent] = useState(false);
 
   return (
-    <div
-      style={{
-        fontSize: fontSize,
-        background: palette.background,
-        color: palette.color,
-        minHeight: '100vh',
-        padding: 32,
-      }}
-      aria-label="Accessibility Page"
-    >
+    <div className="container mx-auto py-8 px-4">
       {/* ARIA live region for screen readers */}
       <div aria-live="polite" style={{ position: 'absolute', left: -9999, top: 'auto', width: 1, height: 1, overflow: 'hidden' }}>
         {ariaMessage}
       </div>
-      <h1 style={{ fontWeight: 'bold', fontSize: fontSize + 10, color: palette.heading, letterSpacing: 1 }} tabIndex={0}>Accessibility Features</h1>
-      {/* Voice Input - moved to top for prominence */}
-      <section aria-label="Voice Input" style={{ margin: '24px 0 8px 0', display: 'flex', alignItems: 'center', gap: 16 }}>
-        <button
-          onClick={listening ? stopListening : startListening}
-          style={{
-            background: listening ? '#f59e42' : palette.accent,
-            color: '#fff',
-            border: 'none',
-            borderRadius: 6,
-            padding: '8px 16px',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            marginRight: 12,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-          }}
-          aria-pressed={listening}
-          aria-label={listening ? 'Stop voice input' : 'Start voice input'}
-          title="Use your voice to input text. You can also press Alt + V to toggle voice input."
-        >
-          <img src={micIcon} alt="Mic icon" style={{ width: 20, height: 20, filter: 'invert(1)' }} />
-          {listening ? 'Stop Voice Input' : 'Start Voice Input'}
-        </button>
-        <span aria-live="polite" style={{ fontWeight: 'bold', fontSize: fontSize + 2, color: palette.accent, minHeight: 28 }}>
-          {voiceInput ? `You said: "${voiceInput}"` : 'Click the mic or press Alt + V to use voice input.'}
-        </span>
+      
+      {/* Hero section */}
+      <div className="bg-gradient-to-r from-[var(--kenya-green)]/10 to-[var(--kenya-black)]/5 rounded-xl p-6 md:p-10 mb-8">
+        <h1 className="text-3xl md:text-4xl font-bold mb-4 text-[var(--kenya-black)]">Accessibility Features</h1>
+        <p className="text-muted-foreground mb-6 max-w-2xl">
+          We're committed to making Kazi Connect accessible to all users. Customize your experience with the options below.
+        </p>
+      </div>
+      
+      <div
+        style={{
+          fontSize: fontSize,
+          background: palette.background,
+          color: palette.color,
+          borderRadius: '0.75rem',
+          padding: '1.5rem',
+          border: `1px solid ${palette.border}`,
+        }}
+        aria-label="Accessibility Controls"
+        className="shadow-md"
+      >
+      {/* Voice Input */}
+      <section 
+        aria-label="Voice Input" 
+        className="p-6 mb-6 rounded-lg" 
+        style={{ background: `rgba(${palette.card})` }}
+      >
+        <div className="flex items-center gap-2 mb-4">
+          <Mic className="h-5 w-5" style={{ color: palette.accent }} />
+          <h2 className="text-xl font-semibold" style={{ color: palette.heading }}>Voice Input</h2>
+        </div>
+        
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+          <Button
+            onClick={listening ? stopListening : startListening}
+            className="flex items-center gap-2"
+            style={{
+              background: listening ? '#f59e42' : palette.accent,
+              color: '#fff',
+            }}
+            aria-pressed={listening}
+            aria-label={listening ? 'Stop voice input' : 'Start voice input'}
+          >
+            {listening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+            {listening ? 'Stop Voice Input' : 'Start Voice Input'}
+          </Button>
+          
+          {voiceInput && (
+            <div 
+              aria-live="polite" 
+              className="p-3 rounded-md" 
+              style={{ background: 'rgba(var(--kenya-green)/10)' }}
+            >
+              <p className="font-medium">You said: "{voiceInput}"</p>
+            </div>
+          )}
+        </div>
+        
+        <p className="text-sm mt-4 text-muted-foreground">
+          Press <kbd className="px-2 py-1 rounded bg-muted">Alt + V</kbd> to toggle voice input
+        </p>
       </section>
       {/* Keyboard shortcut instructions */}
       <section aria-label="Keyboard Shortcuts" style={{ margin: '16px 0', background: palette.accent, color: palette.contrastText, padding: 12, borderRadius: 8 }}>
@@ -141,6 +187,71 @@ export default function Accessibility() {
           <li>Alt + V: Toggle Voice Input</li>
           <li>Alt + S: Toggle Screen Reader Mode</li>
         </ul>
+      </section>
+      {/* Display Settings */}
+      <section 
+        aria-label="Display Settings" 
+        className="p-6 mb-6 rounded-lg" 
+        style={{ background: `rgba(${palette.card})` }}
+      >
+        <div className="flex items-center gap-2 mb-4">
+          <Eye className="h-5 w-5" style={{ color: palette.accent }} />
+          <h2 className="text-xl font-semibold" style={{ color: palette.heading }}>Display Settings</h2>
+        </div>
+        
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="high-contrast" className="font-medium">High Contrast Mode</Label>
+              <p className="text-sm text-muted-foreground">Increases contrast for better visibility</p>
+            </div>
+            <Switch
+              id="high-contrast"
+              checked={highContrast}
+              onCheckedChange={(checked) => {
+                setHighContrast(checked);
+                setAriaMessage(checked ? 'High contrast mode enabled' : 'High contrast mode disabled');
+              }}
+              aria-label="Toggle high contrast mode"
+            />
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="color-blind" className="font-medium">Color Blind Friendly Mode</Label>
+              <p className="text-sm text-muted-foreground">Optimizes colors for color vision deficiencies</p>
+            </div>
+            <Switch
+              id="color-blind"
+              checked={colorBlindPalette}
+              onCheckedChange={(checked) => {
+                setColorBlindPalette(checked);
+                setAriaMessage(checked ? 'Color blind mode enabled' : 'Color blind mode disabled');
+              }}
+              aria-label="Toggle color blind friendly mode"
+            />
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="screen-reader" className="font-medium">Screen Reader Mode</Label>
+              <p className="text-sm text-muted-foreground">Adds extra ARIA labels and verbosity</p>
+            </div>
+            <Switch
+              id="screen-reader"
+              checked={screenReaderMode}
+              onCheckedChange={(checked) => {
+                setScreenReaderMode(checked);
+                setAriaMessage(checked ? 'Screen reader mode enabled' : 'Screen reader mode disabled');
+              }}
+              aria-label="Toggle screen reader mode"
+            />
+          </div>
+        </div>
+        
+        <p className="text-sm mt-4 text-muted-foreground">
+          Press <kbd className="px-2 py-1 rounded bg-muted">Alt + C</kbd> to toggle contrast or <kbd className="px-2 py-1 rounded bg-muted">Alt + B</kbd> for color blind mode
+        </p>
       </section>
       {/* Font size control */}
       <section aria-label="Font Size Controls" style={{ margin: '24px 0' }}>
@@ -157,118 +268,99 @@ export default function Accessibility() {
         />
         <span aria-live="polite">{fontSize}px</span>
       </section>
-      {/* High Contrast Toggle */}
-      <section aria-label="High Contrast Mode" style={{ margin: '24px 0' }}>
-        <label style={{ fontWeight: 'bold' }}>
-          <input
-            type="checkbox"
-            checked={highContrast}
-            onChange={e => setHighContrast(e.target.checked)}
-            style={{ marginRight: 8 }}
-            aria-label="Enable High Contrast Mode"
-          />
-          Enable High Contrast Mode (for partial blindness)
-        </label>
-      </section>
-      {/* Color Blind Friendly Palette Toggle */}
-      <section aria-label="Color Blind Friendly Palette" style={{ margin: '24px 0' }}>
-        <label style={{ fontWeight: 'bold' }}>
-          <input
-            type="checkbox"
-            checked={colorBlindPalette}
-            onChange={e => setColorBlindPalette(e.target.checked)}
-            style={{ marginRight: 8 }}
-            aria-label="Enable Color Blind Friendly Palette"
-          />
-          Enable Color Blind Friendly Palette
-        </label>
-      </section>
-      {/* Screen Reader Mode Toggle */}
-      <section aria-label="Screen Reader Mode" style={{ margin: '24px 0' }}>
-        <label style={{ fontWeight: 'bold' }}>
-          <input
-            type="checkbox"
-            checked={screenReaderMode}
-            onChange={e => setScreenReaderMode(e.target.checked)}
-            style={{ marginRight: 8 }}
-            aria-label="Enable Screen Reader Mode"
-          />
-          Enable Screen Reader Mode (adds extra ARIA labels and verbosity)
-        </label>
-      </section>
-      {/* Voice Input */}
-      <section aria-label="Voice Input" style={{ margin: '24px 0' }}>
-        <button
-          onClick={listening ? stopListening : startListening}
-          style={{
-            background: listening ? '#f59e42' : palette.accent,
-            color: '#fff',
-            border: 'none',
-            borderRadius: 6,
-            padding: '8px 16px',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            marginRight: 12,
-          }}
-          aria-pressed={listening}
-          aria-label={listening ? 'Stop voice input' : 'Start voice input'}
-        >
-          {listening ? 'Stop Voice Input' : 'Start Voice Input'}
-        </button>
-        <span aria-live="polite" style={{ fontWeight: 'bold' }}>
-          {voiceInput && `You said: "${voiceInput}"`}
-        </span>
-      </section>
       {/* Accessibility Info */}
-      <section aria-label="Accessibility Info" style={{ margin: '24px 0' }}>
-        <h2 style={{ fontWeight: 'bold', fontSize: fontSize + 4 }}>How this page helps:</h2>
-        <ul style={{ lineHeight: 2 }}>
-          <li>Zoom in/out text for easier reading</li>
-          <li>High contrast mode for users with partial blindness or color vision deficiency</li>
-          <li>Color blind friendly palette for common color vision deficiencies</li>
-          <li>Voice input for users who cannot use a keyboard or mouse</li>
-          <li>Screen reader mode adds extra ARIA labels and verbosity</li>
-          <li>Screen reader friendly: all controls are labeled and keyboard accessible</li>
+      <section 
+        aria-label="Accessibility Info" 
+        className="p-6 mb-6 rounded-lg" 
+        style={{ background: `rgba(${palette.card})` }}
+      >
+        <div className="flex items-center gap-2 mb-4">
+          <Volume2 className="h-5 w-5" style={{ color: palette.accent }} />
+          <h2 className="text-xl font-semibold" style={{ color: palette.heading }}>How These Features Help</h2>
+        </div>
+        
+        <ul className="space-y-2">
+          <li className="flex items-start gap-2">
+            <div className="h-6 w-6 flex items-center justify-center rounded-full" style={{ background: palette.accent, color: '#fff' }}>1</div>
+            <span>Adjustable text size for easier reading and reduced eye strain</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <div className="h-6 w-6 flex items-center justify-center rounded-full" style={{ background: palette.accent, color: '#fff' }}>2</div>
+            <span>High contrast mode for users with partial blindness or color vision deficiency</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <div className="h-6 w-6 flex items-center justify-center rounded-full" style={{ background: palette.accent, color: '#fff' }}>3</div>
+            <span>Color blind friendly palette for common color vision deficiencies</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <div className="h-6 w-6 flex items-center justify-center rounded-full" style={{ background: palette.accent, color: '#fff' }}>4</div>
+            <span>Voice input for users who cannot use a keyboard or mouse</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <div className="h-6 w-6 flex items-center justify-center rounded-full" style={{ background: palette.accent, color: '#fff' }}>5</div>
+            <span>Screen reader mode adds extra ARIA labels and verbosity</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <div className="h-6 w-6 flex items-center justify-center rounded-full" style={{ background: palette.accent, color: '#fff' }}>6</div>
+            <span>All controls are labeled and keyboard accessible</span>
+          </li>
         </ul>
       </section>
       {/* Feedback Form */}
-      <section aria-label="Accessibility Feedback" style={{ margin: '24px 0' }}>
-        <h2 style={{ fontWeight: 'bold', fontSize: fontSize + 2 }}>Accessibility Feedback</h2>
-        {feedbackSent ? (
-          <div aria-live="polite" style={{ color: palette.accent, fontWeight: 'bold' }}>Thank you for your feedback!</div>
+      <section 
+        aria-label="Accessibility Feedback" 
+        className="p-6 rounded-lg" 
+        style={{ background: `rgba(${palette.card})` }}
+      >
+        <div className="flex items-center gap-2 mb-4">
+          <MessageSquare className="h-5 w-5" style={{ color: palette.accent }} />
+          <h2 className="text-xl font-semibold" style={{ color: palette.heading }}>Accessibility Feedback</h2>
+        </div>
+        
+        {showSuccessMessage ? (
+          <div 
+            aria-live="polite" 
+            className="p-4 rounded-md" 
+            style={{ background: 'rgba(var(--kenya-green)/20)' }}
+          >
+            <p className="font-medium text-[var(--kenya-green)]">Thank you for your feedback! We appreciate your input.</p>
+          </div>
         ) : (
           <form
-            onSubmit={e => { e.preventDefault(); setFeedbackSent(true); setAriaMessage('Feedback submitted'); }}
-            style={{ marginTop: 8 }}
+            onSubmit={e => { 
+              e.preventDefault(); 
+              setShowSuccessMessage(true); 
+              setAriaMessage('Feedback submitted'); 
+            }}
+            className="space-y-4"
           >
-            <label htmlFor="access-feedback" style={{ fontWeight: 'bold' }}>Describe any accessibility issues or suggestions:</label>
-            <textarea
-              id="access-feedback"
-              value={feedback}
-              onChange={e => setFeedback(e.target.value)}
-              rows={4}
-              style={{ display: 'block', width: '100%', margin: '8px 0', fontSize: fontSize, borderRadius: 6, border: '1px solid #ccc', padding: 8 }}
-              aria-label="Accessibility feedback text area"
-              required
-            />
-            <button
+            <div className="space-y-2">
+              <Label htmlFor="access-feedback" className="font-medium">Describe any accessibility issues or suggestions:</Label>
+              <Textarea
+                id="access-feedback"
+                value={feedback}
+                onChange={e => setFeedback(e.target.value)}
+                rows={4}
+                className="w-full"
+                style={{ fontSize: fontSize }}
+                aria-label="Accessibility feedback text area"
+                required
+              />
+            </div>
+            
+            <Button
               type="submit"
-              style={{
-                background: palette.accent,
-                color: '#fff',
-                border: 'none',
-                borderRadius: 6,
-                padding: '8px 16px',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-              }}
+              className="flex items-center gap-2"
+              style={{ background: palette.accent, color: '#fff' }}
               aria-label="Submit accessibility feedback"
             >
+              <Send className="h-4 w-4" />
               Submit Feedback
-            </button>
+            </Button>
           </form>
         )}
       </section>
+      </div>
     </div>
   );
 }

@@ -67,10 +67,7 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true,
           });
         } catch (error: any) {
-          const isDebugMode = import.meta.env.VITE_DEBUG_MODE === 'true';
-          if (isDebugMode) {
-            console.error('Sign in error:', error);
-          }
+          console.error('Sign in error:', error);
           throw error;
         }
       },
@@ -105,10 +102,7 @@ export const useAuthStore = create<AuthState>()(
             });
 
           if (profileError) {
-            const isDebugMode = import.meta.env.VITE_DEBUG_MODE === 'true';
-            if (isDebugMode) {
-              console.error('Profile creation error:', profileError);
-            }
+            console.error('Profile creation error:', profileError);
             // Don't throw here, as the user is already created
           }
 
@@ -131,10 +125,7 @@ export const useAuthStore = create<AuthState>()(
 
           return { confirmEmail };
         } catch (error: any) {
-          const isDebugMode = import.meta.env.VITE_DEBUG_MODE === 'true';
-          if (isDebugMode) {
-            console.error('Sign up error:', error);
-          }
+          console.error('Sign up error:', error);
           throw error;
         }
       },
@@ -152,10 +143,7 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: false,
           });
         } catch (error: any) {
-          const isDebugMode = import.meta.env.VITE_DEBUG_MODE === 'true';
-          if (isDebugMode) {
-            console.error('Sign out error:', error);
-          }
+          console.error('Sign out error:', error);
           throw error;
         }
       },
@@ -190,12 +178,8 @@ export const useAuthStore = create<AuthState>()(
             });
           }
         } catch (error: any) {
-          const isDebugMode = import.meta.env.VITE_DEBUG_MODE === 'true';
-          if (isDebugMode) {
-            console.error('Get session error:', error);
-          }
-          // Don't throw here to allow the app to continue even if session retrieval fails
-          // This prevents login loops when there are temporary auth issues
+          console.error('Get session error:', error);
+          throw error;
         }
       },
     }),

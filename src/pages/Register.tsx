@@ -74,7 +74,7 @@ export default function Register() {
       <div className="container flex h-screen w-screen flex-col items-center justify-center">
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
           <div className="flex flex-col items-center space-y-4">
-            <MailCheck className="h-12 w-12 text-primary" />
+            <MailCheck className="h-12 w-12 text-[var(--kenya-green)]" />
             <h1 className="text-2xl font-semibold tracking-tight">Check your email</h1>
           </div>
 
@@ -86,7 +86,7 @@ export default function Register() {
           </Alert>
 
           <div className="text-center text-sm">
-            <Link to="/login" className="underline">
+            <Link to="/login" className="text-[var(--kenya-green)] underline-offset-4 hover:underline">
               Back to login
             </Link>
           </div>

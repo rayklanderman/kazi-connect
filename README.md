@@ -111,4 +111,11 @@ The project uses Supabase Edge Functions for AI features. To deploy them:
 
 ## License
 
-MIT
+**PROPRIETARY AND CONFIDENTIAL**
+
+This codebase is provided under a restricted license. See the [LICENSE](./LICENSE) file for details.
+
+### Important Notice
+- This code is shared for hackathon judging purposes only
+- All rights reserved - unauthorized use, copying, or distribution is prohibited
+- No part of this codebase may be reproduced or used in other projects without explicit written permission
